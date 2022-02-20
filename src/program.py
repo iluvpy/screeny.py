@@ -3,13 +3,20 @@ from PyQt5.QtCore import Qt, QEvent, QRect
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QMouseEvent, QPaintEvent, QPainter, QPen
 from keys import KeyHandler
 from mouse import MouseHandler
+from enum import Enum, auto
 
-class Program(QMainWindow):
+class ExitMethod:
+    IMAGE_TAKEN = auto()
+    ESCAPE = auto()
+    UKNOWN = auto()
+
+class ScrenshotProgram(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
         self.mouse = MouseHandler()
         self.keys = KeyHandler()
+        self.exit_method = ExitMethod.UKNOWN
         self.already_closed = False
         self.last_down_pos = None
         self.image_size = None
@@ -26,11 +33,12 @@ class Program(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:
         if not self.already_closed:
             self.already_closed = True
-            print("closing...")
+            print("closing screenshot taker...")
             return super().closeEvent(event)
 
     def event(self, event: QEvent) -> bool:
         if self.keys.is_pressed(Qt.Key.Key_Escape) and not self.already_closed:
+            self.exit_method = ExitMethod.ESCAPE
             self.close()
         
         if self.mouse.left_down() and self.last_down_pos is None:
@@ -48,6 +56,7 @@ class Program(QMainWindow):
             if y > ry: ry, y = y, ry
 
             self.image_size = QRect(x, y, rx, ry)
+            self.exit_method = ExitMethod.IMAGE_TAKEN
             self.close()
         
         self.update()
@@ -94,3 +103,6 @@ class Program(QMainWindow):
     
     def get_image_size(self) -> QRect:
         return self.image_size
+
+    def get_exit_method(self) -> ExitMethod:
+        return self.exit_method
