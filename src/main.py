@@ -8,7 +8,7 @@ from program import ScrenshotProgram, ExitMethod
 def main() -> int:
     
     def on_press(key):
-        if key == keyboard.Key.f12:
+        if key == keyboard.Key.f10:
             return False
         return True
 
