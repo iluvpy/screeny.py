@@ -23,8 +23,11 @@ def main() -> int:
     image_size = program.get_image_size()
     if image_size is not None: # if an image was taken
         time.sleep(1) # wait for window to close
-        image = ImageGrab.grab((image_size.x(), image_size.y(), image_size.width(), image_size.height()))
-        image.save("screenshot.png")
+        try: 
+            image = ImageGrab.grab((image_size.x(), image_size.y(), image_size.width(), image_size.height()))
+            image.save("screenshot.png")
+        except Exception:
+            print("Error occured while taking image, this could be the result of invalid coordinates or sizes")
 
     if program.get_exit_method() == ExitMethod.UKNOWN:
         return exit_ # didnt exit normally (ie. escape or by taking an image)
